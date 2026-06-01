@@ -24,6 +24,9 @@ class Post extends Model
         'status',
         'views',
     ];
+    public function category(){
+        return $this->belongsTo(Category::class);
+    }
 
     // protected $guarded = [];
 }

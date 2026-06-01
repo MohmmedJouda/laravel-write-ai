@@ -12,7 +12,7 @@
                     class="w-full bg-transparent border-none focus:ring-0 font-display-lg text-display-lg resize-none placeholder:text-surface-variant text-on-surface mb-8 overflow-hidden"
                     placeholder="Enter your title...">
                 <!-- Floating Toolbar (Contextual) -->
-                {{-- 
+                {{--
                 <div class="sticky top-20 z-40 flex justify-center mb-12">
                     <div
                         class="bg-inverse-surface text-inverse-on-surface px-2 py-1.5 rounded-xl shadow-xl flex items-center gap-1 border border-outline/20">
@@ -55,8 +55,7 @@
                 --}}
                 <textarea name="content"
                     class="w-full bg-transparent border-none focus:ring-0 font-body-lg text-body-lg text-on-surface leading-relaxed placeholder:text-surface-variant"
-                    data-placeholder="Type your story..."
-                    oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'>{{ $post->content }}</textarea>
+                    data-placeholder="Type your story..." oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'>{{ $post->content }}</textarea>
             </div>
             <button type="submit"
                 class="bg-primary text-on-primary px-6 py-3 rounded-lg font-ui-label text-ui-label hover:bg-primary-hover transition-colors">
@@ -96,6 +95,21 @@
                         class="w-full bg-white border border-outline-variant rounded-lg px-4 py-2 font-metadata text-metadata focus:ring-1 focus:ring-primary focus:border-primary transition-all"
                         placeholder="Add tag..." type="text" />
                 </section>
+                <section>
+                    <h3 class="font-ui-label text-ui-label text-on-surface mb-4 uppercase tracking-wider">Choose
+                        Category</h3>
+                    <select name="category_id" id="category_id"
+                        class="w-full bg-white border border-outline-variant rounded-lg px-4 py-2 font-metadata text-metadata focus:ring-1 focus:ring-primary focus:border-primary transition-all">
+                        <option value="">Select Category</option>
+                        @foreach ($categories as $category)
+                        <option value="{{ $category->id }}"
+                            {{ $post->category_id == $category->id ? 'selected' : '' }}>
+                            {{ $category->name }}
+                        </option>
+                        @endforeach
+                    </select>
+                </section>
+
                 <!-- SEO Preview -->
                 <section>
                     <div class="flex justify-between items-center mb-4">

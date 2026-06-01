@@ -96,14 +96,41 @@
                         "ui-label": ["Inter"]
                     },
                     "fontSize": {
-                        "body-lg": ["20px", { "lineHeight": "1.6", "fontWeight": "400" }],
-                        "ui-button": ["16px", { "lineHeight": "1", "letterSpacing": "0.02em", "fontWeight": "600" }],
-                        "display-lg": ["48px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
-                        "headline-md": ["32px", { "lineHeight": "1.3", "fontWeight": "600" }],
-                        "body-md": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
-                        "display-lg-mobile": ["32px", { "lineHeight": "1.2", "fontWeight": "700" }],
-                        "metadata": ["12px", { "lineHeight": "1.4", "fontWeight": "400" }],
-                        "ui-label": ["14px", { "lineHeight": "1.4", "letterSpacing": "0.01em", "fontWeight": "500" }]
+                        "body-lg": ["20px", {
+                            "lineHeight": "1.6",
+                            "fontWeight": "400"
+                        }],
+                        "ui-button": ["16px", {
+                            "lineHeight": "1",
+                            "letterSpacing": "0.02em",
+                            "fontWeight": "600"
+                        }],
+                        "display-lg": ["48px", {
+                            "lineHeight": "1.2",
+                            "letterSpacing": "-0.02em",
+                            "fontWeight": "700"
+                        }],
+                        "headline-md": ["32px", {
+                            "lineHeight": "1.3",
+                            "fontWeight": "600"
+                        }],
+                        "body-md": ["18px", {
+                            "lineHeight": "1.6",
+                            "fontWeight": "400"
+                        }],
+                        "display-lg-mobile": ["32px", {
+                            "lineHeight": "1.2",
+                            "fontWeight": "700"
+                        }],
+                        "metadata": ["12px", {
+                            "lineHeight": "1.4",
+                            "fontWeight": "400"
+                        }],
+                        "ui-label": ["14px", {
+                            "lineHeight": "1.4",
+                            "letterSpacing": "0.01em",
+                            "fontWeight": "500"
+                        }]
                     }
                 },
             },
@@ -121,12 +148,12 @@
                     href="{{ route('home') }}">{{ config('app.name') }}</a>
                 <nav class="hidden md:flex items-center gap-6">
                     @section('nav')
-                    <a class="text-primary font-bold border-b-2 border-primary pb-1 font-ui-label text-ui-label hover:text-primary transition-colors duration-200"
-                        href="#">Feed</a>
-                    <a class="text-on-surface-variant font-medium font-ui-label text-ui-label hover:text-primary transition-colors duration-200"
-                        href="#">Authors</a>
-                    <a class="text-on-surface-variant font-medium font-ui-label text-ui-label hover:text-primary transition-colors duration-200"
-                        href="#">Dashboard</a>
+                        <a class="text-primary font-bold border-b-2 border-primary pb-1 font-ui-label text-ui-label hover:text-primary transition-colors duration-200"
+                            href="#">Feed</a>
+                        <a class="text-on-surface-variant font-medium font-ui-label text-ui-label hover:text-primary transition-colors duration-200"
+                            href="#">Authors</a>
+                        <a class="text-on-surface-variant font-medium font-ui-label text-ui-label hover:text-primary transition-colors duration-200"
+                            href="#">Dashboard</a>
                     @show
                 </nav>
             </div>
@@ -193,6 +220,7 @@
             </div>
         </div>
     </footer>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindplus/elements@1" type="module"></script>
 </body>
 
 </html>
