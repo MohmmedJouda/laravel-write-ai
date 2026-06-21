@@ -15,15 +15,30 @@ class OwnerScope implements Scope
      */
     public function apply(Builder $builder, Model $model): void
     {
-        if (Auth::check()) {
-            $user = Auth::user();
-            if ($user->is_admin) {
-                return; // Skip adding global scope for admin users
-            }
+    //    if (Auth::check()) {
+    //         $user = Auth::user();
+    //         if ($user->is_admin) {
+    //             return; // Skip adding global scope for admin users
+    //         }
 
-            if (Route::is('dashboard.*')) {
-                $builder->where('user_id', $user->id);
-            }
+    //         if (Route::is('dashboard.*')) {
+    //             $builder->where('user_id', $user->id);
+    //         }
+    //     }
+
+
+        if (!Auth::check()) {
+            return;
         }
+
+        $user = Auth::user();
+
+        if ($user->is_admin) {
+            return;
+        }
+
+        $builder->where('user_id', $user->id);
+
     }
+
 }

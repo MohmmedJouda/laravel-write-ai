@@ -24,6 +24,7 @@ class PostController extends Controller
      */
     public function index(Request $request)
     {
+
         $status = $request->query('status', 'published');
 
         $status_options = array_map(function ($value) {
@@ -42,20 +43,12 @@ class PostController extends Controller
         // select * from posts where user_id = ? and status = ? order by created_at desc
         // select * from categories where id in (....)
         $posts = $user->posts()
-            ->withTrashed()
-            //->leftJoin('categories', 'posts.category_id', '=', 'categories.id')
-            ->with('category') // Eager loading
-            ->select([
-                'posts.*',
-                //'categories.name as category_name',
-            ])
-            // ->addSelect(
-            //     DB::raw('(SELECT COUNT(*) FROM comments WHERE comments.post_id = posts.id) AS comments_count')
-            // )
+            ->with('category')
             ->withCount('comments')
             ->where('status', $status)
             ->orderBy('created_at', 'desc')
             ->paginate(10);
+
 
 
         return view('dashboard.posts.index', [
@@ -162,7 +155,7 @@ class PostController extends Controller
         }
 
 
-        $previous = $post->getPrevious();
+        $previous = $post->getOriginal();
         $prev_cover_image = $previous['cover_image'] ?? null;
         if ($prev_cover_image !== $post->cover_image) {
             Storage::disk('public')->delete($previous['cover_image']); // Delete the old cover image from storage

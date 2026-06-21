@@ -13,11 +13,11 @@
                 <p class="text-on-surface-variant max-w-lg font-ui-label text-ui-label">Manage your intellectual
                     output, track performance, and schedule your upcoming editorial pieces.</p>
             </div>
-            <button
+            <a href="{{ route('dashboard.posts.create') }}"
                 class="bg-primary-container text-on-primary px-6 py-3 rounded-lg font-ui-button text-ui-button flex items-center gap-2 hover:opacity-90 active:scale-95 transition-all shadow-sm">
                 <span class="material-symbols-outlined text-[20px]" data-icon="edit_square">edit_square</span>
                 Create Post
-            </button>
+            </a>
         </div>
         <!-- Dashboard Layout Grid -->
         <div class="grid grid-cols-12 gap-8">
@@ -67,7 +67,7 @@
                     <div class="flex gap-8 overflow-x-auto no-scrollbar">
                         @foreach ($status_options as $option)
                         <a href="{{ route('dashboard.posts.index', ['status' => strtolower($option['name'])]) }}"
-                            class="{{ $status == strtolower($option['name'])? 'border-b-2 border-primary text-primary' : '' }} pb-4 text-ui-label font-bold whitespace-nowrap">
+                            class="{{ $status == strtolower($option['name']) ? 'border-b-2 border-primary text-primary' : '' }} pb-4 text-ui-label font-bold whitespace-nowrap">
                             {{ $option['name'] }}
                             ({{ $option['count'] }})
                         </a>
@@ -104,7 +104,6 @@
                 <!-- Post Table/List -->
                 <div class="space-y-4">
                     @foreach ($posts as $post)
-
                     <div
                         class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant hover:border-primary transition-all group">
                         <div class="flex items-start gap-4">
@@ -113,13 +112,16 @@
                             <div class="flex-grow grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
                                 <div class="md:col-span-6">
                                     <span class="text-metadata font-metadata text-primary mb-1 block">
-                                        {{ $post->category->name }}
+                                        {{-- {{ $post->category->name }} --}}
+                                        {{ $post->category?->name }}
                                         • 8 min read</span>
                                     <h3
                                         class="font-headline-md text-[20px] leading-snug group-hover:text-primary transition-colors">
-                                        {{ $post->title }}</h3>
+                                        {{ $post->title }}
+                                    </h3>
                                     <p class="text-metadata font-metadata text-on-surface-variant mt-1">Published on
-                                        {{ $post->publish_time->format('M j, Y H:i') }}</p>
+                                        {{ $post->publish_time->format('M j, Y H:i') }}
+                                    </p>
                                 </div>
                                 <div class="md:col-span-2 flex flex-col">
                                     <span class="text-metadata font-metadata text-outline">Engagement</span>
@@ -131,60 +133,40 @@
                                         </div>
                                         <div class="flex items-center gap-1 text-ui-label font-medium">
                                             <span class="material-symbols-outlined text-[18px]"
-                                                data-icon="chat_bubble">chat_bubble</span> {{ $post->comments_count }}
+                                                data-icon="chat_bubble">chat_bubble</span>
+                                            {{ $post->comments_count }}
                                         </div>
                                     </div>
                                 </div>
                                 <div class="md:col-span-2">
-                                    @if ($post->trashed())
                                     <span
-                                        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-200 text-red-50 text-green-700 text-[12px] font-bold border border-green-200">
-                                        <span class="h-1.5 w-1.5 rounded-full bg-red-600"></span>
-                                        Deleted
-                                    </span>
-                                    @else
-                                    <span
-                                        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-{{ $post->status->getColor() }}-200 text-{{ $post->status->getColor() }}-50 text-green-700 text-[12px] font-bold border border-green-200">
+                                        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-{{ $post->status->getColor() }}-100 text-{{ $post->status->getColor() }}-700 text-[12px] font-bold border border-{{ $post->status->getColor() }}-200">
                                         <span
                                             class="h-1.5 w-1.5 rounded-full bg-{{ $post->status->getColor() }}-600"></span>
                                         {{ $post->status->getLabel() }}
                                     </span>
-                                    @endif
                                 </div>
                                 <div
                                     class="md:col-span-2 flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    @if($post->trashed())
-                                    <button
-                                        onclick="confirm('Are you sure you want to restore this post?')? document.getElementById('restorepost{{ $post->id }}').submit() : null;"
-                                        class="p-2 text-on-surface-variant hover:bg-surface-container rounded-lg transition-all"
-                                        title="More">
-                                        <span class="material-symbols-outlined" data-icon="refresh">refresh</span>
-                                    </button>
-                                    <form style="display: none;" id="restorepost{{ $post->id }}"
-                                        action="{{ route('dashboard.posts.restore', $post->id) }}" method="post">
-                                        @csrf
-                                        @method('PUT')
-                                    </form>
-                                    @else
                                     <a href="{{ route('dashboard.posts.edit', $post->id) }}"
                                         class="p-2 text-on-surface-variant hover:bg-surface-container hover:text-primary rounded-lg transition-all"
                                         title="Edit">
                                         <span class="material-symbols-outlined" data-icon="edit">edit</span>
                                     </a>
-                                    @endif
                                     <button
                                         class="p-2 text-on-surface-variant hover:bg-surface-container hover:text-primary rounded-lg transition-all"
                                         title="Analytics">
-                                        <span class="material-symbols-outlined" data-icon="bar_chart">bar_chart</span>
+                                        <span class="material-symbols-outlined"
+                                            data-icon="bar_chart">bar_chart</span>
                                     </button>
                                     <button
                                         onclick="confirm('Are you sure you want to delete this post?')? document.getElementById('deletepost{{ $post->id }}').submit() : null;"
                                         class="p-2 text-on-surface-variant hover:bg-surface-container rounded-lg transition-all"
-                                        title="More">
+                                        title="Delete">
                                         <span class="material-symbols-outlined" data-icon="delete">delete</span>
                                     </button>
                                     <form style="display: none;" id="deletepost{{ $post->id }}"
-                                        action="{{ route('dashboard.posts.' . ($post->trashed()? 'force-delete' : 'destroy'), $post->id) }}"
+                                        action="{{ route('dashboard.posts.destroy', $post->id) }}"
                                         method="post">
                                         @csrf
                                         @method('DELETE')

@@ -12,16 +12,16 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use App\Models\Category;
 
 #[ScopedBy(OwnerScope::class)]
 #[ObservedBy(PostObserver::class)]
 class Post extends Model
 {
-    use SoftDeletes;
+
 
     protected $connection = 'mysql';
     protected $table = 'posts';
