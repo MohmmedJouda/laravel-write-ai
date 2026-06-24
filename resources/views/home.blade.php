@@ -17,7 +17,7 @@ gap-8">
     </x-slot:style>
 
     <!-- Left Sidebar: Navigation & Tags -->
-   
+
     <aside class="hidden md:block md:col-span-2 space-y-8">
         <div class="space-y-4">
             <h3 class="font-ui-label text-ui-label uppercase tracking-widest text-secondary font-bold">Discover</h3>

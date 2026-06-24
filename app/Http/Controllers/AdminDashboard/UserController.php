@@ -18,13 +18,9 @@ class UserController extends Controller
      */
     public function index()
     {
-        // if (Gate::denies('users.view')) {
-        //     abort(403);
-        // }
-        // $user = Auth::user();
-        // abort_if(!$user->can('view-any', User::class), 403);
-
-        echo 'Admin Dashboard';
+        Gate::authorize('users.view');
+        $users = User::paginate();
+        return view('admin.users.index', compact('users'));
     }
 
     /**
@@ -32,8 +28,11 @@ class UserController extends Controller
      */
     public function create()
     {
-        // abort_if(!Auth::user()->can('create', User::class), 403);
-        return __METHOD__;
+        Gate::authorize('users.create');
+        return view('admin.users.create', [
+            'user' => new User(),
+            'roles' => \App\Models\Role::all(),
+        ]);
     }
 
     /**
@@ -41,8 +40,20 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //abort_if(!Auth::user()->can('create', User::class), 403);
-        return __METHOD__;
+        Gate::authorize('users.create');
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|min:8',
+            'roles' => 'nullable|array',
+            'roles.*' => 'exists:roles,id',
+        ]);
+
+        $user = User::create($request->all());
+        $user->roles()->sync($request->input('roles', []));
+
+        return redirect()->route('admin.users.index')
+            ->with('success', 'User created successfully.');
     }
 
     /**
@@ -50,8 +61,8 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        //abort_if(!Auth::user()->can('view', $user), 403);
-        return __METHOD__;
+        Gate::authorize('users.view');
+        return view('admin.users.show', compact('user'));
     }
 
     /**
@@ -59,8 +70,11 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
-        //abort_if(!Auth::user()->can('update', $user), 403);
-        return __METHOD__;
+        Gate::authorize('users.update');
+        return view('admin.users.edit', [
+            'user' => $user,
+            'roles' => \App\Models\Role::all(),
+        ]);
     }
 
     /**
@@ -68,8 +82,19 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        //abort_if(!Auth::user()->can('update', $user), 403);
-        return __METHOD__;
+        Gate::authorize('users.update');
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'roles' => 'nullable|array',
+            'roles.*' => 'exists:roles,id',
+        ]);
+
+        $user->update($request->all());
+        $user->roles()->sync($request->input('roles', []));
+
+        return redirect()->route('admin.users.index')
+            ->with('success', 'User updated successfully.');
     }
 
     /**
@@ -77,8 +102,10 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        Gate::authorize('delete', $user);
-        //abort_if(!Auth::user()->can('delete', $user), 403);
-        return __METHOD__;
+        Gate::authorize('users.delete');
+        $user->delete();
+
+        return redirect()->route('admin.users.index')
+            ->with('success', 'User deleted successfully.');
     }
 }

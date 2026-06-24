@@ -47,7 +47,7 @@ class AppServiceProvider extends ServiceProvider
         foreach (config('abilities') as $key => $value) {
             Gate::define($key, function ($user) use ($key): bool {
                 foreach ($user->roles as $role) {
-                    if (in_array($key, $role->abilities)) {
+                    if (is_array($role->abilities) && in_array($key, $role->abilities)) {
                         return true;
                     }
                 }

@@ -12,6 +12,7 @@ use App\Services\PostService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Number;
 use Illuminate\Support\Str;
@@ -25,6 +26,7 @@ class PostController extends Controller
      */
     public function index(Request $request)
     {
+        Gate::authorize('viewAny', Post::class);
 
         $status = $request->query('status', 'published');
 
@@ -41,16 +43,12 @@ class PostController extends Controller
 
         $user = Auth::user();
 
-        // select * from posts where user_id = ? and status = ? order by created_at desc
-        // select * from categories where id in (....)
         $posts = $user->posts()
             ->with('category')
             ->withCount('comments')
             ->where('status', $status)
             ->orderBy('created_at', 'desc')
             ->paginate(10);
-
-
 
         return view('dashboard.posts.index', [
             'posts' => $posts,
@@ -64,6 +62,8 @@ class PostController extends Controller
      */
     public function create()
     {
+        Gate::authorize('create', Post::class);
+
         return view('dashboard.posts.create', [
             'post' => new Post(),
         ]);
@@ -74,6 +74,8 @@ class PostController extends Controller
      */
     public function store(PostRequest $request, PostService $service)
     {
+        Gate::authorize('create', Post::class);
+
         try {
             $service->create($request);
         } catch (Throwable $e) {
@@ -84,7 +86,6 @@ class PostController extends Controller
                 ]);
         }
 
-        // PRG: POST Redirect GET)
         return redirect()
             ->route('dashboard.posts.index')
             ->with('status', 'Post created!');
@@ -96,6 +97,7 @@ class PostController extends Controller
     public function show(int $id)
     {
         $post = Post::findOrFail($id);
+        Gate::authorize('view', $post);
 
         return view('dashboard.posts.show', [
             'post' => $post,
@@ -108,6 +110,7 @@ class PostController extends Controller
     public function edit(int $id)
     {
         $post = Post::findOrFail($id);
+        Gate::authorize('update', $post);
 
         return view('dashboard.posts.edit', [
             'post' => $post,
@@ -120,6 +123,7 @@ class PostController extends Controller
     public function update(PostRequest $request, FileUpload $fileUpload, SyncPostTags $syncPostTags, string $id)
     {
         $post = Post::findOrFail($id);
+        Gate::authorize('update', $post);
 
         $clean = $request->validated();
         $data = \array_merge($clean, [
@@ -144,10 +148,9 @@ class PostController extends Controller
         $previous = $post->getOriginal();
         $prev_cover_image = $previous['cover_image'] ?? null;
         if ($prev_cover_image !== $post->cover_image) {
-            Storage::disk('public')->delete($previous['cover_image']); // Delete the old cover image from storage
+            Storage::disk('public')->delete($previous['cover_image']);
         }
 
-        // PRG: POST Redirect GET
         return redirect()->route('dashboard.posts.index')
             ->with('status', 'Post updated!');
     }
@@ -157,15 +160,11 @@ class PostController extends Controller
      */
     public function destroy(string $id)
     {
-        //Post::destroy($id);
         $post = Post::findOrFail($id);
+        Gate::authorize('delete', $post);
+
         $post->delete();
 
-        // if ($post->cover_image) {
-        //     Storage::disk('public')->delete($post->cover_image); // Delete the cover image from storage
-        // }
-
-        // PRG: POST Redirect GET
         return redirect()->route('dashboard.posts.index')
             ->with('status', 'Post deleted!');
     }
@@ -173,9 +172,10 @@ class PostController extends Controller
     public function restore(string $id)
     {
         $post = Post::onlyTrashed()->findOrFail($id);
+        Gate::authorize('restore', $post);
+
         $post->restore();
 
-        // PRG: POST Redirect GET
         return redirect()->route('dashboard.posts.index')
             ->with('status', 'Post restored!');
     }
@@ -183,10 +183,10 @@ class PostController extends Controller
     public function forceDelete(string $id)
     {
         $post = Post::onlyTrashed()->findOrFail($id);
+        Gate::authorize('forceDelete', $post);
 
         $post->forceDelete();
 
-        // PRG: POST Redirect GET
         return redirect()->route('dashboard.posts.index')
             ->with('status', 'Post permanently deleted!');
     }
