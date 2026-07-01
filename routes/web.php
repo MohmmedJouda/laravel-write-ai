@@ -1,12 +1,30 @@
 <?php
 
+use App\Http\Controllers\AdminDashboard\UserController;
+use App\Http\Controllers\Dashboard\AiWriteController;
+use App\Http\Controllers\Dashboard\NotificationController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Dashboard\PostController;
+use App\Http\Controllers\FollowController;
+use App\Http\Middleware\EnsureUserType;
 use Illuminate\Support\Facades\Route;
+
+Route::any('ai/posts/write', AiWriteController::class)
+        ->name('posts.ai');
 
 Route::get('/', HomeController::class)->name('home');
 Route::get('/posts/{slug}', [PostController::class, 'show'])
     ->name('posts.show');
+Route::get('/u/{username}', function () {})
+    ->name('users.profile');
+
+
+Route::post('users/{user}/follow', [FollowController::class, 'store'])
+    ->name('users.follow')
+    ->middleware(['auth:web']);
+Route::delete('users/{user}/unfollow', [FollowController::class, 'destroy'])
+    ->name('users.unfollow')
+    ->middleware(['auth:web']);
 
 
 Route::group([
@@ -21,4 +39,19 @@ Route::group([
         ->name('posts.force-delete');
 
     Route::resource('posts', PostController::class);
+
+    Route::group([
+        'as' => 'notifications.',
+        'prefix' => 'notifications/',
+        'controller' => NotificationController::class,
+    ], function () {
+        Route::get('/', 'index')->name('index');
+        Route::patch('/{id}/read', 'read')->name('read');
+        Route::patch('/{id}/unread', 'unread')->name('unread');
+        Route::delete('/{id}', 'destroy')->name('destroy');
+    });
 });
+
+
+Route::resource('admin/users', UserController::class)
+    ->middleware(['auth', 'type:super-admin,admin', 'can:update']);
